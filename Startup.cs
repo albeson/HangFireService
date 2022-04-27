@@ -64,8 +64,19 @@ namespace HangFireService
                 endpoints.MapControllers();
             });
 
-            app.UseHangfireDashboard();
-            backgroundJobClient.Enqueue(() => Console.WriteLine("HangFire job!"));
+            //app.UseHangfireDashboard();
+            
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                
+                Authorization = new List<NoAuthFilter> { new NoAuthFilter() },
+                StatsPollingInterval = 60000 //can't seem to find the UoM on github - would love to know if this is seconds or ms
+            }
+            );
+        
+
+
+        backgroundJobClient.Enqueue(() => Console.WriteLine("HangFire job!"));
             recurringJobManager.AddOrUpdate(
                 "Run every minute",
                 () => serviceProvider.GetService<IPrintJob>().Print(),
